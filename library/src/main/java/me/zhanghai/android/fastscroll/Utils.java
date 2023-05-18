@@ -18,10 +18,13 @@ package me.zhanghai.android.fastscroll;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
@@ -29,6 +32,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 class Utils {
@@ -65,7 +69,17 @@ class Utils {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1
                 && drawable instanceof GradientDrawable) {
             drawable = DrawableCompat.wrap(drawable);
-            drawable.setTintList(getColorStateListFromAttrRes(tintAttrRes, context));
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = context.getTheme();
+                theme.resolveAttribute(tintAttrRes, typedValue, true);
+                drawable.setColorFilter(
+                        ContextCompat.getColor(context, typedValue.resourceId),
+                        PorterDuff.Mode.SRC_ATOP
+                );
+            } else {
+                drawable.setTintList(getColorStateListFromAttrRes(tintAttrRes, context));
+            }
         }
         return drawable;
     }

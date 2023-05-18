@@ -1,19 +1,23 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
 
 android {
-    namespace 'me.zhanghai.android.fastscroll'
+    namespace GROUP
     compileSdk 34
     buildToolsVersion = '34.0.0'
     defaultConfig {
-        minSdk 21
+        minSdk 16
         targetSdk 34
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
         consumerProguardFiles 'proguard-rules.pro'
     }
+    def javaVersion = JavaVersion.VERSION_11
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
     }
     buildTypes {
         release {
@@ -27,4 +31,12 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.3.1'
 }
 
-apply plugin: 'com.vanniktech.maven.publish'
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
+}
